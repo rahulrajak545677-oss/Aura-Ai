@@ -16,7 +16,16 @@ jobs:
       - name: Extract project ZIP
         run: |
           mkdir -p extracted_src
-          unzip -o aura_ai_github_apk_v2.zip -d extracted_src
+          echo "=== Repository root files ==="
+          ls -la
+          ZIP_PATH=$(find . -maxdepth 3 -iname "*aura*ai*.zip" -o -iname "*.zip" | head -n 1)
+          echo "Detected ZIP path: ${ZIP_PATH:-<none>}"
+          if [ -z "$ZIP_PATH" ]; then
+            echo "ERROR: No .zip file found in repository. Upload aura_ai_github_apk_v2.zip and re-run."
+            exit 1
+          fi
+          unzip -o "$ZIP_PATH" -d extracted_src
+          echo "=== Extracted contents ==="
           ls -la extracted_src
 
       - name: Set up JDK 17
