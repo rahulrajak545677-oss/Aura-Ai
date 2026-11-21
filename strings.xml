@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AURA AI</string>
+    <string name="overlay_notif_channel_name">AURA AI Floating Bubble</string>
+    <string name="overlay_notif_title">AURA AI overlay active</string>
+    <string name="overlay_notif_text">Tap bubble for quick mini-chat or manage in AURA AI settings.</string>
+    <string name="task_notif_channel_name">AURA AI Reminders</string>
+</resources>
