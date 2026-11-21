@@ -16,14 +16,13 @@ jobs:
       - name: Extract project ZIP
         run: |
           mkdir -p extracted_src
-          ZIP_PATH=$(find . -maxdepth 3 -iname "*aura*ai*.zip" -o -iname "*.zip" | head -n 1)
+          ZIP_PATH=$(find . -maxdepth 3 -iname "aura_ai_clean_apk.zip" -o -iname "*.zip" | head -n 1)
           echo "Detected ZIP path: ${ZIP_PATH:-<none>}"
           test -n "$ZIP_PATH"
           unzip -o "$ZIP_PATH" -d extracted_src
 
           INNER_ZIP=$(find extracted_src -maxdepth 2 -iname "*.zip" | head -n 1)
           if [ -n "$INNER_ZIP" ]; then
-            echo "Detected nested ZIP: $INNER_ZIP"
             unzip -o "$INNER_ZIP" -d extracted_src
           fi
 
@@ -32,15 +31,6 @@ jobs:
           test -n "$SETTINGS_FILE"
           PROJECT_DIR=$(dirname "$SETTINGS_FILE")
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
-          printf '\nkotlin {\n    jvmToolchain(17)\n}\n' >> "$PROJECT_DIR/app/build.gradle.kts"
-
-          RES_DIR="$PROJECT_DIR/app/src/main/res"
-          mkdir -p "$RES_DIR/drawable" "$RES_DIR/mipmap-anydpi-v26"
-          printf '<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#080D18" android:pathData="M0,0h108v108h-108z"/></vector>\n' > "$RES_DIR/drawable/ic_launcher_bg.xml"
-          printf '<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108"><path android:fillColor="#299BFF" android:pathData="M54,26L76,82H65L59,66H49L43,82H32L54,26ZM54,43L51,57H57L54,43Z"/></vector>\n' > "$RES_DIR/drawable/ic_launcher_fg.xml"
-          printf '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/ic_launcher_bg"/><foreground android:drawable="@drawable/ic_launcher_fg"/></adaptive-icon>\n' > "$RES_DIR/mipmap-anydpi-v26/ic_launcher.xml"
-          printf '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@drawable/ic_launcher_bg"/><foreground android:drawable="@drawable/ic_launcher_fg"/></adaptive-icon>\n' > "$RES_DIR/mipmap-anydpi-v26/ic_launcher_round.xml"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
