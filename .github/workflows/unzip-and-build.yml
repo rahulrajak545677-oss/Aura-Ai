@@ -33,6 +33,14 @@ jobs:
           PROJECT_DIR=$(dirname "$SETTINGS_FILE")
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
+          # Align Java, Kotlin, and KSP on JVM 17
+          cat << 'EOF' >> "$PROJECT_DIR/app/build.gradle.kts"
+
+          kotlin {
+              jvmToolchain(17)
+          }
+          EOF
+
           # Ensure @mipmap/ic_launcher and @mipmap/ic_launcher_round exist
           RES_DIR="$PROJECT_DIR/app/src/main/res"
           mkdir -p "$RES_DIR/drawable" "$RES_DIR/mipmap-anydpi-v26"
@@ -68,25 +76,5 @@ jobs:
       - name: Configure Android SDK & Accept Licenses
         run: |
           SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
-          SDKMANAGER=$(find "$SDK_ROOT/cmdline-tools" -name "sdkmanager" | head -n 1)
-          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
-          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses > /dev/null || true
-          "$SDKMANAGER" --sdk_root="$SDK_ROOT" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.10.2'
-
-      - name: Build Debug APK
-        run: |
-          cd "$PROJECT_DIR"
-          gradle assembleDebug --no-daemon
-
-      - name: Upload Debug APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: aura-ai-debug-apk
-          path: "${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk"
+          SDKMANAGER=$(
           
